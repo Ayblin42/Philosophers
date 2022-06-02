@@ -7,6 +7,7 @@ RM			=	rm -f
 SRCS		=	main.c \
 				init.c \
 				display.c \
+				ft_action.c \
 
 OBJS		=	${SRCS:.c=.o}
 

@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 21:28:52 by ayblin            #+#    #+#             */
-/*   Updated: 2022/05/23 11:38:35 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/02 17:33:45 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ typedef struct s_settings
 	int	        time_to_die;
 	int	        time_to_eat;
 	int	        time_to_sleep;
-	int		*fork;
 	pthread_mutex_t write;
 }			t_settings;
 
@@ -66,5 +65,9 @@ void				*routine(void *arg);
 void				init_settings(t_settings *s, char **av);
 long int			get_time(void);
 void				print_state_change(int	state, t_philo *p);
+
+void	philo_eat(t_philo *p);
+void	philo_sleep(t_philo *p);
+void	philo_think(t_philo *p);
 
 #endif

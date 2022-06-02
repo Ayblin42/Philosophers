@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:24:50 by ayblin            #+#    #+#             */
-/*   Updated: 2022/05/23 13:53:51 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/02 19:05:40 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,6 @@ long int        get_time(void)
         }
         gettimeofday(&tv, NULL);
         return (tv.tv_sec * 1000 + tv.tv_usec / 1000 - start_time);
-}
-
-int	fork_r(t_settings *s, int i)
-{
-	if ((i + 1) == s->philo_nb)
-		return (0);
-	else
-		return (i);
 }
 
 int	main(int ac, char **av)
@@ -54,40 +46,41 @@ void	*routine(void *arg)
 	t_philo	*p;
 
 	p = (t_philo *)arg;
-	write(1,"routine\n",8);
+	if (p->id % 2)
+		usleep(p->s->time_to_eat);
 	while(1)
 	{
-		pthread_mutex_lock(&p->lfork);
-		pthread_mutex_lock(p->rfork);
-			// write(1,"routin1\n",8);
-		if (p->s->fork[p->id] == 0 && p->s->fork[fork_r(p->s, p->id)] == 0)
-		{
-			print_state_change(D_FORK, p);
-			print_state_change(D_FORK, p);
-			p->s->fork[p->id] = 1;
-			p->s->fork[fork_r(p->s, p->id)] = 1;
-			// write(1,"caca\n",5);
-			pthread_mutex_unlock(&p->lfork);
-			pthread_mutex_unlock(p->rfork);
-			// print_state_change(D_EAT, p);
-			write(1,"eat\n",4);
-			usleep(p->s->time_to_eat);
-			pthread_mutex_lock(&p->lfork);
-			pthread_mutex_lock(p->rfork);
-			p->s->fork[p->id] = 0;
-			p->s->fork[fork_r(p->s, p->id)] = 0;
-			pthread_mutex_unlock(&p->lfork);
-			pthread_mutex_unlock(p->rfork);
-			// print_state_change(D_THINK, p);
-			write(1,"sleep\n",6);
-			usleep(p->s->time_to_sleep);
-		}
-		else
-		{
-			pthread_mutex_unlock(&p->lfork);
-			pthread_mutex_unlock(p->rfork);
-		}
-
+		philo_eat(p);
+		philo_sleep(p);
+		philo_think(p);
 	}
 	return (0);
+}
+
+void	death_checker(t_rules *r, t_philosopher *p)
+{
+	int i;
+
+	while (!(r->all_ate))
+	{
+		i = -1;
+		while (++i < r->nb_philo && !(r->dieded))
+		{
+			pthread_mutex_lock(&(r->meal_check));
+			if (time_diff(p[i].t_last_meal, timestamp()) > r->time_death)
+			{
+				action_print(r, i, "died");
+				r->dieded = 1;
+			}
+			pthread_mutex_unlock(&(r->meal_check));
+			usleep(100);
+		}
+		if (r->dieded)
+			break ;
+		i = 0;
+		while (r->nb_eat != -1 && i < r->nb_philo && p[i].x_ate >= r->nb_eat)
+			i++;
+		if (i == r->nb_philo)
+			r->all_ate = 1;
+	}
 }

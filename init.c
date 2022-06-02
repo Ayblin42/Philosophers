@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 14:47:28 by ayblin            #+#    #+#             */
-/*   Updated: 2022/05/23 13:24:16 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/02 17:49:05 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,8 @@ t_philo    **init_philo(t_settings *s)
 
 void    init_settings(t_settings *s, char **av)
 {
-    int i;
-
-    i = 0;
     s->philo_nb = ft_atoi(av[1]);
 	s->time_to_die = ft_atoi(av[2]);
 	s->time_to_eat = ft_atoi(av[3]);
 	s->time_to_sleep = ft_atoi(av[4]);
-	s->fork = malloc(sizeof(int) * s->philo_nb);
-    while (i < s->philo_nb)
-    {
-        s->fork[i] = 0;
-        i++;
-    }
 }
