@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:24:50 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/04 17:02:36 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/04 17:30:48 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	*routine(void *arg)
 	p = (t_philo *)arg;
 	if (p->id % 2)
 		usleep(p->s->time_to_eat);
-	while(1)
+	while(!(p->s->died))
 	{
 		philo_eat(p);
 		philo_sleep(p);
