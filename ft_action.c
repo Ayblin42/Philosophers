@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 16:16:55 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/04 16:42:22 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/04 18:18:57 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	philo_eat(t_philo *p)
 	print_state_change(D_EAT, p);
 	p->last_meal = get_time();
 	sleep_check(p->s->time_to_eat, p->s);
+	(p->meal_count)++;
 	pthread_mutex_unlock(&p->lfork);
 	pthread_mutex_unlock(p->rfork);
 }
