@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 21:28:52 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/02 17:33:45 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/04 17:02:48 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,10 @@ typedef struct s_settings
 	int	        time_to_die;
 	int	        time_to_eat;
 	int	        time_to_sleep;
+	int			meal_nb;
+	int			died;  // flag if a philo die
+	int			all_ate; // flag if a philo a manger meal_nb fois
+	pthread_mutex_t meal_check;
 	pthread_mutex_t write;
 }			t_settings;
 
@@ -53,7 +57,7 @@ typedef struct s_philo
 {
 	t_settings			*s;
 	int					id;
-	long int			last_meal;
+	long long int		last_meal;
 	int					meal_count;
 	pthread_t			thread_id;
 	pthread_mutex_t		lfork;
@@ -69,5 +73,7 @@ void				print_state_change(int	state, t_philo *p);
 void	philo_eat(t_philo *p);
 void	philo_sleep(t_philo *p);
 void	philo_think(t_philo *p);
+void	sleep_check(int	time_to_sleep, t_settings *s);
+void	death_checker(t_settings *s, t_philo **p);
 
 #endif

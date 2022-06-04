@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 14:47:28 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/02 17:49:05 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/03 18:43:19 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ t_philo    **init_philo(t_settings *s)
     p = (t_philo **)malloc(sizeof(t_philo) * s->philo_nb);
     if (!p)
         return (NULL);
-    pthread_mutex_init(&s->write, NULL);
     i = -1;
     while (++i < s->philo_nb)
     {
@@ -51,4 +50,8 @@ void    init_settings(t_settings *s, char **av)
 	s->time_to_die = ft_atoi(av[2]);
 	s->time_to_eat = ft_atoi(av[3]);
 	s->time_to_sleep = ft_atoi(av[4]);
+    s->died = 0;  // flag if a philo die
+	s->all_ate = 0;
+    pthread_mutex_init(&s->write, NULL);
+    pthread_mutex_init(&s->meal_check, NULL);
 }

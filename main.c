@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:24:50 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/02 19:05:40 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/04 17:02:36 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,16 @@ int	main(int ac, char **av)
 	t_settings	s;
 	t_philo	**p;
 
+	if (ac != 5 && ac != 6)
+	{
+		ft_putstr_fd("invalid number of arguments .\n", 2);
+		return  0;
+	}
 	init_settings(&s, av);
 	p = init_philo(&s);
+	death_checker(&s, p);
 	(void)p;
 	(void)ac;
-	while (1)
-	{
-
-	}
 }
 
 void	*routine(void *arg)
@@ -57,30 +59,26 @@ void	*routine(void *arg)
 	return (0);
 }
 
-void	death_checker(t_rules *r, t_philosopher *p)
+void	death_checker(t_settings *s, t_philo **p)
 {
 	int i;
 
-	while (!(r->all_ate))
+	while (1)
 	{
 		i = -1;
-		while (++i < r->nb_philo && !(r->dieded))
+		while (++i < s->philo_nb && !(s->died))
 		{
-			pthread_mutex_lock(&(r->meal_check));
-			if (time_diff(p[i].t_last_meal, timestamp()) > r->time_death)
+			pthread_mutex_lock(&(s->meal_check));
+			if (s->time_to_die < get_time() - p[i]->last_meal)
 			{
-				action_print(r, i, "died");
-				r->dieded = 1;
+				print_state_change(D_DEATH, p[i]);
+				s->died = 1;
 			}
-			pthread_mutex_unlock(&(r->meal_check));
+			pthread_mutex_unlock(&(s->meal_check));
 			usleep(100);
 		}
-		if (r->dieded)
+		if (s->died)
 			break ;
 		i = 0;
-		while (r->nb_eat != -1 && i < r->nb_philo && p[i].x_ate >= r->nb_eat)
-			i++;
-		if (i == r->nb_philo)
-			r->all_ate = 1;
 	}
 }
