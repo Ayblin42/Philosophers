@@ -8,6 +8,7 @@ SRCS		=	main.c \
 				init.c \
 				display.c \
 				ft_action.c \
+				utils.c \
 
 OBJS		=	${SRCS:.c=.o}
 

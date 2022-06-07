@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 21:28:52 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/04 17:02:48 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/07 21:04:50 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 # include <sys/uio.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <limits.h>
 
 typedef struct s_settings
 {
@@ -64,9 +65,12 @@ typedef struct s_philo
 	pthread_mutex_t		*rfork;
 }		t_philo;
 
+int	str_is_num(char *str);
+int	ft_error(char *str, int ret);
+
 t_philo				**init_philo(t_settings *s);
 void				*routine(void *arg);
-void				init_settings(t_settings *s, char **av);
+void				init_settings(t_settings *s, char **av, int ac);
 long int			get_time(void);
 void				print_state_change(int	state, t_philo *p);
 

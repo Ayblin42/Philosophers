@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 14:47:28 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/03 18:43:19 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/07 19:01:07 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,16 @@ t_philo    **init_philo(t_settings *s)
     return (p);
 }
 
-void    init_settings(t_settings *s, char **av)
+void    init_settings(t_settings *s, char **av, int ac)
 {
     s->philo_nb = ft_atoi(av[1]);
 	s->time_to_die = ft_atoi(av[2]);
 	s->time_to_eat = ft_atoi(av[3]);
 	s->time_to_sleep = ft_atoi(av[4]);
+    if (ac == 6)
+        s->meal_nb = ft_atoi(av[5]);
+    else
+        s->meal_nb = -1;
     s->died = 0;  // flag if a philo die
 	s->all_ate = 0;
     pthread_mutex_init(&s->write, NULL);

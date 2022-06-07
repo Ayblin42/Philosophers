@@ -6,11 +6,30 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 16:16:55 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/04 18:18:57 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/07 19:57:59 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+
+void	*routine(void *arg)
+{
+	t_philo	*p;
+
+	p = (t_philo *)arg;
+	if (p->id % 2)
+		usleep(p->s->time_to_eat);
+	while(!(p->s->died))
+	{
+		philo_eat(p);
+		if (p->s->all_ate)
+			break ;
+		philo_sleep(p);
+		philo_think(p);
+	}
+	return (0);
+}
 
 void	philo_eat(t_philo *p)
 {

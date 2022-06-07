@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:24:50 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/04 17:30:48 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/07 21:07:54 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,44 +26,11 @@ long int        get_time(void)
         return (tv.tv_sec * 1000 + tv.tv_usec / 1000 - start_time);
 }
 
-int	main(int ac, char **av)
-{
-	t_settings	s;
-	t_philo	**p;
-
-	if (ac != 5 && ac != 6)
-	{
-		ft_putstr_fd("invalid number of arguments .\n", 2);
-		return  0;
-	}
-	init_settings(&s, av);
-	p = init_philo(&s);
-	death_checker(&s, p);
-	(void)p;
-	(void)ac;
-}
-
-void	*routine(void *arg)
-{
-	t_philo	*p;
-
-	p = (t_philo *)arg;
-	if (p->id % 2)
-		usleep(p->s->time_to_eat);
-	while(!(p->s->died))
-	{
-		philo_eat(p);
-		philo_sleep(p);
-		philo_think(p);
-	}
-	return (0);
-}
-
 void	death_checker(t_settings *s, t_philo **p)
 {
 	int i;
 
-	while (1)
+	while (!(s->all_ate))
 	{
 		i = -1;
 		while (++i < s->philo_nb && !(s->died))
@@ -80,5 +47,50 @@ void	death_checker(t_settings *s, t_philo **p)
 		if (s->died)
 			break ;
 		i = 0;
+		if (s->meal_nb != -1)
+		{
+			while (i < s->philo_nb)
+			{
+				if (p[i]->meal_count < s->meal_nb)
+					break ;
+				i++;
+				if (i == s->philo_nb)
+					s->all_ate = 1;
+			}
+		}
 	}
+}
+
+int	invalid_argument(char **av)
+{
+	int	i;
+	int	n;
+
+	i = 0;
+	while (av[++i])
+	{
+		if (!str_is_num(av[i]))
+			return (0);
+		n = ft_atoi(av[i]);
+		printf("|%d|\n", n);
+		if (n == -1 || n == 0)
+			return (0);
+	}
+	return (1);
+}
+
+int	main(int ac, char **av)
+{
+	t_settings	s;
+	t_philo	**p;
+
+	if (ac != 5 && ac != 6)
+		return (ft_error("invalid number of arguments .\n", 2));
+	if (!invalid_argument(av))
+		return (ft_error("Invalid arguments .\n", 2));
+	init_settings(&s, av, ac);
+	p = init_philo(&s);
+	death_checker(&s, p);
+	(void)p;
+	(void)ac;
 }
