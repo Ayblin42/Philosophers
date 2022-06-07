@@ -6,29 +6,29 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:24:50 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/07 21:07:54 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/07 21:17:02 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long int        get_time(void)
+long int	get_time(void)
 {
-        struct timeval  tv;
-        static long int start_time = -2;
+	struct timeval	tv;
+	static long int	start_time = -2;
 
-        if (start_time == -2)
-        {
-                gettimeofday(&tv, NULL);
-                start_time = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-        }
-        gettimeofday(&tv, NULL);
-        return (tv.tv_sec * 1000 + tv.tv_usec / 1000 - start_time);
+	if (start_time == -2)
+	{
+		gettimeofday(&tv, NULL);
+		start_time = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	}
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000 - start_time);
 }
 
 void	death_checker(t_settings *s, t_philo **p)
 {
-	int i;
+	int	i;
 
 	while (!(s->all_ate))
 	{
@@ -72,7 +72,6 @@ int	invalid_argument(char **av)
 		if (!str_is_num(av[i]))
 			return (0);
 		n = ft_atoi(av[i]);
-		printf("|%d|\n", n);
 		if (n == -1 || n == 0)
 			return (0);
 	}
@@ -82,7 +81,7 @@ int	invalid_argument(char **av)
 int	main(int ac, char **av)
 {
 	t_settings	s;
-	t_philo	**p;
+	t_philo		**p;
 
 	if (ac != 5 && ac != 6)
 		return (ft_error("invalid number of arguments .\n", 2));

@@ -6,12 +6,11 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 16:16:55 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/07 19:57:59 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/07 21:14:52 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
 
 void	*routine(void *arg)
 {
@@ -20,7 +19,7 @@ void	*routine(void *arg)
 	p = (t_philo *)arg;
 	if (p->id % 2)
 		usleep(p->s->time_to_eat);
-	while(!(p->s->died))
+	while (!(p->s->died))
 	{
 		philo_eat(p);
 		if (p->s->all_ate)
@@ -56,7 +55,7 @@ void	philo_think(t_philo *p)
 	print_state_change(D_THINK, p);
 }
 
-void	sleep_check(int	time_to_sleep, t_settings *s)
+void	sleep_check(int time_to_sleep, t_settings *s)
 {
 	long long int	i;
 
