@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:24:50 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/07 21:17:02 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/24 22:57:09 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,21 @@ long int	get_time(void)
 	}
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000 - start_time);
+}
+
+static void	nb_eat_checker(t_settings *s, t_philo **p)
+{
+	int	i;
+
+	i = 0;
+	while (i < s->philo_nb)
+	{
+		if (p[i]->meal_count < s->meal_nb)
+			break ;
+		i++;
+		if (i == s->philo_nb)
+			s->all_ate = 1;
+	}
 }
 
 void	death_checker(t_settings *s, t_philo **p)
@@ -46,18 +61,8 @@ void	death_checker(t_settings *s, t_philo **p)
 		}
 		if (s->died)
 			break ;
-		i = 0;
 		if (s->meal_nb != -1)
-		{
-			while (i < s->philo_nb)
-			{
-				if (p[i]->meal_count < s->meal_nb)
-					break ;
-				i++;
-				if (i == s->philo_nb)
-					s->all_ate = 1;
-			}
-		}
+			nb_eat_checker(s, p);
 	}
 }
 
@@ -82,14 +87,22 @@ int	main(int ac, char **av)
 {
 	t_settings	s;
 	t_philo		**p;
+	int			i;
 
+	i = 0;
 	if (ac != 5 && ac != 6)
 		return (ft_error("invalid number of arguments .\n", 2));
 	if (!invalid_argument(av))
 		return (ft_error("Invalid arguments .\n", 2));
 	init_settings(&s, av, ac);
 	p = init_philo(&s);
-	death_checker(&s, p);
-	(void)p;
-	(void)ac;
+	if (s.philo_nb > 1)
+		death_checker(&s, p);
+	while (i < s.philo_nb)
+	{
+		pthread_join(p[i]->thread_id, NULL);
+		free(p[i]);
+		i++;
+	}
+	free(p);
 }

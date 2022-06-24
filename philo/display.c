@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 09:52:21 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/07 21:15:49 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/24 22:49:38 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	print_state_change(int state, t_philo *p)
 	long int	time;
 
 	time = get_time();
+	pthread_mutex_lock(&p->s->death_check);
 	if (!p->s->died)
 	{
 		pthread_mutex_lock(&p->s->write);
@@ -34,4 +35,5 @@ void	print_state_change(int state, t_philo *p)
 			printf("MERDE");
 		pthread_mutex_unlock(&p->s->write);
 	}
+	pthread_mutex_unlock(&p->s->death_check);
 }
