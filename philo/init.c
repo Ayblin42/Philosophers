@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 14:47:28 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/24 22:48:48 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/25 18:02:07 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,9 @@ t_philo	**init_philo(t_settings *s)
 
 void	init_settings(t_settings *s, char **av, int ac)
 {
+	int	i;
+
+	i = -1;
 	s->philo_nb = ft_atoi(av[1]);
 	s->time_to_die = ft_atoi(av[2]);
 	s->time_to_eat = ft_atoi(av[3]);
@@ -70,6 +73,12 @@ void	init_settings(t_settings *s, char **av, int ac)
 		s->meal_nb = -1;
 	s->died = 0;
 	s->all_ate = 0;
+	s->fork = malloc(sizeof(char) * s->philo_nb);
+	while(++i < s->philo_nb)
+	{
+		printf("|%i\n",i);
+		s->fork[i] = 1;
+	}
 	pthread_mutex_init(&s->write, NULL);
 	pthread_mutex_init(&s->death_check, NULL);
 	pthread_mutex_init(&s->meal_check, NULL);

@@ -6,11 +6,46 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 16:16:55 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/24 22:51:10 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/25 18:11:28 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	philo_fork(t_philo *p)
+{
+	int i = 0;
+	while(p->s->fork[i++])
+		printf("--%c\n",p->s->fork[i]);
+	printf("f1|%d,f2|%d,   nb =%d\n",p->id,(p->id + 1) % p->philo_nb,p->philo_nb);
+	// while(1)
+	// {
+	// 	pthread_mutex_lock(&p->lfork);
+	// 	if (p->s->fork[p->id] == 1)
+	// 	{
+	// 		p->s->fork[p->id] = 2;
+	// 		print_state_change(D_FORK, p);
+	// 		pthread_mutex_unlock(&p->lfork);
+	// 		break ;
+	// 	}
+	// 	pthread_mutex_unlock(&p->lfork);
+	// 	usleep(50);
+	// }
+	// while(1)
+	// {
+	// 	pthread_mutex_lock(p->rfork);
+	// 	if (p->s->fork[(p->id + 1) % p->philo_nb] == 1)
+	// 	{
+	// 		p->s->fork[(p->id + 1) % p->philo_nb] = 2;
+	// 		print_state_change(D_FORK, p);
+	// 		pthread_mutex_unlock(p->rfork);
+	// 		break ;
+	// 	}
+	// 	pthread_mutex_unlock(p->rfork);
+	// 	usleep(50);
+	// }
+	return (0);
+}
 
 void	*routine(void *arg)
 {
@@ -33,6 +68,8 @@ void	*routine(void *arg)
 	while (!(p->s->died))
 	{
 		pthread_mutex_unlock(&p->s->death_check);
+		philo_fork(p);
+		printf("pipi\n");
 		if (philo_eat(p))
 			return (0);
 		if (p->meal_count == p->meal_nb)
@@ -47,18 +84,18 @@ void	*routine(void *arg)
 
 int	philo_eat(t_philo *p)
 {
-	pthread_mutex_lock(p->rfork);
-	print_state_change(D_FORK, p);
-	pthread_mutex_lock(&p->lfork);
-	print_state_change(D_FORK, p);
 	print_state_change(D_EAT, p);
 	p->last_meal = get_time();
 	if (p->time_to_die < p->time_to_eat)
 		return (1);
 	usleep(p->time_to_eat * 1000);
-	(p->meal_count)++;
+	pthread_mutex_lock(&p->lfork);
+	pthread_mutex_lock(p->rfork);
+	p->s->fork[p->id] = 1;
+	p->s->fork[(p->id + 1) % p->philo_nb] = 1;
 	pthread_mutex_unlock(&p->lfork);
 	pthread_mutex_unlock(p->rfork);
+	(p->meal_count)++;
 	return (0);
 }
 

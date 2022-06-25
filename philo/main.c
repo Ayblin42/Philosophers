@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:24:50 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/24 22:57:09 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/25 17:58:00 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	invalid_argument(char **av)
 
 int	main(int ac, char **av)
 {
-	t_settings	s;
+	t_settings	*s;
 	t_philo		**p;
 	int			i;
 
@@ -94,11 +94,12 @@ int	main(int ac, char **av)
 		return (ft_error("invalid number of arguments .\n", 2));
 	if (!invalid_argument(av))
 		return (ft_error("Invalid arguments .\n", 2));
-	init_settings(&s, av, ac);
-	p = init_philo(&s);
-	if (s.philo_nb > 1)
-		death_checker(&s, p);
-	while (i < s.philo_nb)
+	s = (t_settings *)malloc(sizeof(t_settings));
+	init_settings(s, av, ac);
+	p = init_philo(s);
+	if (s->philo_nb > 1)
+		death_checker(s, p);
+	while (i < s->philo_nb)
 	{
 		pthread_join(p[i]->thread_id, NULL);
 		free(p[i]);

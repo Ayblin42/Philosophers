@@ -6,7 +6,7 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 21:28:52 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/24 22:46:26 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/06/25 18:01:15 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_settings
 	int				time_to_sleep;
 	int				meal_nb;
 
+	char			*fork;
 	int				died;
 	pthread_mutex_t	death_check;
 	int				all_ate;
