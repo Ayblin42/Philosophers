@@ -6,116 +6,94 @@
 /*   By: ayblin <ayblin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 16:16:55 by ayblin            #+#    #+#             */
-/*   Updated: 2022/06/25 18:11:28 by ayblin           ###   ########.fr       */
+/*   Updated: 2022/07/21 02:35:12 by ayblin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	philo_fork(t_philo *p)
+void	sleeping(t_philo *philo)
 {
-	int i = 0;
-	while(p->s->fork[i++])
-		printf("--%c\n",p->s->fork[i]);
-	printf("f1|%d,f2|%d,   nb =%d\n",p->id,(p->id + 1) % p->philo_nb,p->philo_nb);
-	// while(1)
-	// {
-	// 	pthread_mutex_lock(&p->lfork);
-	// 	if (p->s->fork[p->id] == 1)
-	// 	{
-	// 		p->s->fork[p->id] = 2;
-	// 		print_state_change(D_FORK, p);
-	// 		pthread_mutex_unlock(&p->lfork);
-	// 		break ;
-	// 	}
-	// 	pthread_mutex_unlock(&p->lfork);
-	// 	usleep(50);
-	// }
-	// while(1)
-	// {
-	// 	pthread_mutex_lock(p->rfork);
-	// 	if (p->s->fork[(p->id + 1) % p->philo_nb] == 1)
-	// 	{
-	// 		p->s->fork[(p->id + 1) % p->philo_nb] = 2;
-	// 		print_state_change(D_FORK, p);
-	// 		pthread_mutex_unlock(p->rfork);
-	// 		break ;
-	// 	}
-	// 	pthread_mutex_unlock(p->rfork);
-	// 	usleep(50);
-	// }
+	print_state_change(philo, "is sleeping");
+	ft_usleep(philo->s->time_to_sleep, philo);
+}
+
+int	eating(t_philo *philo)
+{
+	if (philo_take_fork(philo) == 1)
+		return (1);
+	print_state_change(philo, "is eating");
+	pthread_mutex_lock(philo->s->lock);
+	philo->last_meal = get_time();
+	pthread_mutex_unlock(philo->s->lock);
+	ft_usleep(philo->s->time_to_eat, philo);
+	pthread_mutex_lock(philo->s->lock);
+	pthread_mutex_lock(philo->s->meal);
+	philo->meal_count++;
+	pthread_mutex_unlock(philo->s->meal);
+	pthread_mutex_unlock(philo->s->lock);
+	pthread_mutex_unlock(&philo->lfork);
+	pthread_mutex_unlock(philo->rfork);
 	return (0);
 }
 
-void	*routine(void *arg)
+int	philo_take_fork(t_philo *philo)
 {
-	t_philo	*p;
-
-	p = (t_philo *)arg;
-	if (p->philo_nb == 1)
+	if (philo->id % 2 == 0)
+		pthread_mutex_lock(philo->rfork);
+	else
+		pthread_mutex_lock(&philo->lfork);
+	print_state_change(philo, "has taken a fork");
+	if (philo->id % 2 == 0)
 	{
-		print_state_change(D_FORK, p);
-		usleep(p->time_to_die * 1000);
-		pthread_mutex_lock(&p->s->death_check);
-		p->s->died = 1;
-		pthread_mutex_unlock(&p->s->death_check);
-		printf("%d %d died\n", p->time_to_die, p->id);
-		return (0);
+		if (pthread_mutex_lock(&philo->lfork))
+		{
+			pthread_mutex_unlock(philo->rfork);
+			return (1);
+		}
+		print_state_change(philo, "has taken a fork");
 	}
-	if (p->id % 2)
-		usleep((p->time_to_eat * 1000) - 50);
-	pthread_mutex_lock(&p->s->death_check);
-	while (!(p->s->died))
+	else
 	{
-		pthread_mutex_unlock(&p->s->death_check);
-		philo_fork(p);
-		printf("pipi\n");
-		if (philo_eat(p))
-			return (0);
-		if (p->meal_count == p->meal_nb)
-			return (0) ;
-		if (philo_sleep(p))
-			return (0);
-		philo_think(p);
-		pthread_mutex_lock(&p->s->death_check);
+		if (pthread_mutex_lock(philo->rfork))
+		{
+			pthread_mutex_unlock(&philo->lfork);
+			return (1);
+		}
+		print_state_change(philo, "has taken a fork");
 	}
 	return (0);
 }
 
-int	philo_eat(t_philo *p)
+void	*philo_one(t_philo *philo)
 {
-	print_state_change(D_EAT, p);
-	p->last_meal = get_time();
-	if (p->time_to_die < p->time_to_eat)
-		return (1);
-	usleep(p->time_to_eat * 1000);
-	pthread_mutex_lock(&p->lfork);
-	pthread_mutex_lock(p->rfork);
-	p->s->fork[p->id] = 1;
-	p->s->fork[(p->id + 1) % p->philo_nb] = 1;
-	pthread_mutex_unlock(&p->lfork);
-	pthread_mutex_unlock(p->rfork);
-	(p->meal_count)++;
-	return (0);
+	printf("%lu %d has taken a fork\n", get_time(), philo->id + 1);
+	ft_usleep(philo->s->time_to_die, philo);
+	printf("%lu %d philo died\n", get_time(), philo->id + 1);
+	return (NULL);
 }
 
-int	philo_sleep(t_philo *p)
+void	*routine(void	*philo_data)
 {
-	long long int	die;
-	long long int	sleep;
-	long long int	eat;
+	t_philo	*philo;
 
-	die = p->time_to_die;
-	sleep = p->time_to_sleep;
-	eat = p->time_to_eat;
-	print_state_change(D_SLEEP, p);
-	if (die <= (eat + sleep))
-		return (1);
-	usleep(p->s->time_to_sleep * 1000);
-	return (0);
-}
-
-void	philo_think(t_philo *p)
-{
-	print_state_change(D_THINK, p);
+	philo = philo_data;
+	if (philo->id % 2)
+		ft_usleep((philo->s->time_to_eat) - 5, philo);
+	while (is_philo_alive(philo) == ALIVE)
+	{
+		if (philo->meal_count == philo->meal_to_take)
+			return (NULL);
+		eating(philo);
+		if (is_philo_alive(philo) != ALIVE)
+			return (NULL);
+		sleeping(philo);
+		if (is_philo_alive(philo) != ALIVE)
+			return (NULL);
+		print_state_change(philo, "is thinking");
+		if (is_philo_alive(philo) != ALIVE)
+			return (NULL);
+		usleep(200);
+	}
+	return (NULL);
 }

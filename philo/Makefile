@@ -9,34 +9,27 @@ SRCS		=	main.c \
 				display.c \
 				ft_action.c \
 				utils.c \
+				death_checker.c \
 
 OBJS		=	${SRCS:.c=.o}
 
-LIBS		=	-lreadline
-
-LIBFT		=	libft/libft.a
-
 NAME		=	philo
 
-all			:	${LIBFT}	${NAME}
+all			:		${NAME}
 
-${NAME}		:	${LIBFT} ${OBJS}
-				${CC} ${FLAGS} ${OBJS} ${LIBFT} ${LIBS} -o ${NAME}
+${NAME}		:	 ${OBJS}
+				${CC} ${FLAGS} ${OBJS} -o ${NAME}
 
-${LIBFT}	:
-				make -C libft/ bonus
 
 .c.o		:
 				${CC} ${FLAGS} -c $< -o ${<:.c=.o}
 
 clean		:
 				${RM} ${OBJS}
-				make -C libft/ clean
 
 fclean		:	clean
 				${RM} ${NAME}
-				make -C libft/ fclean
 
 re			:	fclean	all
 
-.PHONY		:	all clean fclean re libft
+.PHONY		:	all clean fclean re 
